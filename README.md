@@ -1,1 +1,2 @@
-# 2280602795_NgoTienTai_Buoi3
+# MSSV: 2280602795
+# Họ và tên: Ngô Tiến Tài

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+        
+        th {
+            padding: 12px;
+            text-align: left;
+            background-color: #333;
+            color: white;
+        }
+        
+        th:nth-child(1) { width: 50px; }
+        th:nth-child(2) { width: 200px; }
+        th:nth-child(3) { width: 180px; }
+        th:nth-child(4) { width: 300px; }
+        th:nth-child(5) { width: 80px; }
+        th:nth-child(6) { width: 100px; }
+        
+        td {
+            padding: 12px;
+        }
+        
+        tbody tr:nth-child(odd) {
+            background-color: #ffffff;
+            color: #000000;
+        }
+        
+        tbody tr:nth-child(even) {
+            background-color: #000000;
+            color: #ffffff;
+        }
+        
+        img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            margin: 2px;
+        }
+        
+        .image-container {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .search-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        #searchInput {
+            padding: 10px;
+            width: 300px;
+            font-size: 16px;
+            border: 2px solid #333;
+            border-radius: 5px;
+        }
+        
+        .pagination-container {
+            margin: 20px 0;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .pagination-container select {
+            padding: 10px 15px;
+            font-size: 14px;
+            border: 2px solid #333;
+            background-color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .pagination-container select:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .pagination-container button {
+            padding: 10px 20px;
+            font-size: 14px;
+            border: 2px solid #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .pagination-container button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .pagination-container button:disabled {
+            background: #ccc;
+            border-color: #999;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .page-info {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .sort-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .sort-container button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 14px;
+            border: 2px solid #333;
+            background-color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        .sort-container button:hover {
+            background-color: #333;
+            color: white;
+        }
+        
+        .sort-container button.active {
+            background-color: #333;
+            color: white;
+        }
+        
+        tbody tr {
+            position: relative;
+            cursor: pointer;
+        }
+        
+
+        
+        /* ẨN CÁC TÍNH NĂNG
+        .search-container,
+        .pagination-container,
+        .sort-container {
+            display: none;
+        }
+        */
+        
+        /* Tooltip cho description */
+        #global-tooltip {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(30, 30, 30, 0.98);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90%;
+            z-index: 9999;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            font-size: 15px;
+            line-height: 1.7;
+            text-align: left;
+            border: 2px solid #667eea;
+            pointer-events: none;
+        }
+        
+        #global-tooltip.show {
+            display: block;
+        }
+        
+        #global-tooltip::before {
+            content: "📝 Mô tả sản phẩm";
+            display: block;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #667eea;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Products Dashboard</h1>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Tìm kiếm theo tên sản phẩm..." onchange="SearchProducts()">
+    </div>
+    
+    <div class="pagination-container">
+        <label>Hiển thị: </label>
+        <select id="itemsPerPage" onchange="ChangeItemsPerPage()">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+        </select>
+        <span> sản phẩm mỗi trang</span>
+    </div>
+    
+    <div class="sort-container">
+        <label>Sắp xếp: </label>
+        <button onclick="SortByTitle()" id="sortTitleBtn">Tên A-Z ⇅</button>
+        <button onclick="SortByPrice()" id="sortPriceBtn">Giá ⇅</button>
+    </div>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Images</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Category</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+        </tbody>
+    </table>
+    
+    <!-- Global Tooltip -->
+    <div id="global-tooltip"></div>
+    
+    <div class="pagination-container">
+        <button onclick="PreviousPage()" id="prevBtn">« Trước</button>
+        <span class="page-info">Trang <span id="currentPage">1</span> / <span id="totalPages">1</span></span>
+        <button onclick="NextPage()" id="nextBtn">Sau »</button>
+    </div>
+    
+    <script src="main.js"></script>
+</body>
+</html>
